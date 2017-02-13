@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ROOTFS=${ROOTFS:-/rootfs}
-K8S_VERSION=${K8S_VERSION:-v1.5.2}
-KUBEADM_RELEASE=${KUBEADM_RELEASE:-v1.6.0-alpha.0.2074+a092d8e0f95f52}
+K8S_VERSION=${K8S_VERSION:-v1.6.0-alpha.1}
+KUBELET_IMAGE_TAG=${KUBELET_IMAGE_TAG:-${K8S_VERSION}_coreos.0}
 CNI_RELEASE=${CNI_RELEASE:-07a8a28637e97b22eb8dfe710eeae1344f69d16e}
 ARCH=${ARCH:-amd64}
 CNI_BIN_DIR=${CNI_BIN_DIR:-/opt/cni}
@@ -54,7 +54,7 @@ else
 fi
 
 if [[ ! -f ${ROOTFS}/${BIN_DIR}/kubeadm ]]; then
-	curl -sSL https://storage.googleapis.com/kubernetes-release-dev/ci-cross/${KUBEADM_RELEASE}/bin/linux/${ARCH}/kubeadm > ${ROOTFS}/${BIN_DIR}/kubeadm
+	curl -sSL https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/${ARCH}/kubeadm > ${ROOTFS}/${BIN_DIR}/kubeadm
 	chmod +x ${ROOTFS}/${BIN_DIR}/kubeadm
 	echo "Installed kubeadm in ${BIN_DIR}/kubeadm"
 else
@@ -76,7 +76,7 @@ if [[ ! -f ${ROOTFS}/etc/systemd/system/kubelet.service ]]; then
 	Documentation=http://kubernetes.io/docs/
 
 	[Service]
-	Environment="KUBELET_IMAGE_TAG=${K8S_VERSION}_coreos.0"
+	Environment="KUBELET_IMAGE_TAG=${KUBELET_IMAGE_TAG}"
 	Environment="${EXTRA_ENVIRONMENT}"
 	ExecStart=${KUBELET_EXEC} --kubeconfig=/etc/kubernetes/kubelet.conf --require-kubeconfig=true --pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=true --network-plugin=cni --cni-conf-dir=/etc/cni/net.d --cni-bin-dir=/opt/cni/bin --cluster-dns=10.96.0.10 --cluster-domain=cluster.local
 	Restart=always
