@@ -6,6 +6,7 @@ KUBELET_IMAGE_TAG=${KUBELET_IMAGE_TAG:-${K8S_VERSION}_coreos.0}
 CNI_RELEASE=${CNI_RELEASE:-07a8a28637e97b22eb8dfe710eeae1344f69d16e}
 ARCH=${ARCH:-amd64}
 CNI_BIN_DIR=${CNI_BIN_DIR:-/opt/cni}
+IP=$(hostname -i)
 
 if [[ $1 == "coreos" ]]; then
 	BIN_DIR=${BIN_DIR:-/opt/bin}
@@ -78,7 +79,17 @@ if [[ ! -f ${ROOTFS}/etc/systemd/system/kubelet.service ]]; then
 	[Service]
 	Environment="KUBELET_IMAGE_TAG=${KUBELET_IMAGE_TAG}"
 	Environment="${EXTRA_ENVIRONMENT}"
-	ExecStart=${KUBELET_EXEC} --kubeconfig=/etc/kubernetes/kubelet.conf --require-kubeconfig=true --pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=true --network-plugin=cni --cni-conf-dir=/etc/cni/net.d --cni-bin-dir=/opt/cni/bin --cluster-dns=10.96.0.10 --cluster-domain=cluster.local
+	ExecStart=${KUBELET_EXEC} --kubeconfig=/etc/kubernetes/kubelet.conf \
+	          --require-kubeconfig=true \
+	          --pod-manifest-path=/etc/kubernetes/manifests \
+	          --allow-privileged=true \
+	          --network-plugin=cni \
+	          --cni-conf-dir=/etc/cni/net.d \
+	          --cni-bin-dir=/opt/cni/bin \
+	          --cluster-dns=10.96.0.10 \
+	          --cluster-domain=cluster.local \
+	          --node-ip=${IP} \
+	          --hostname-override=${IP}
 	Restart=always
 	StartLimitInterval=0
 	RestartSec=10
