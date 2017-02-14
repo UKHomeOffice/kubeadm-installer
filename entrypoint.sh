@@ -7,6 +7,7 @@ CNI_RELEASE=${CNI_RELEASE:-07a8a28637e97b22eb8dfe710eeae1344f69d16e}
 ARCH=${ARCH:-amd64}
 CNI_BIN_DIR=${CNI_BIN_DIR:-/opt/cni}
 IP=$(hostname -i)
+HOST=$(hostname)
 
 if [[ $1 == "coreos" ]]; then
 	BIN_DIR=${BIN_DIR:-/opt/bin}
