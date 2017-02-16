@@ -10,9 +10,11 @@ IP=$(hostname -i)
 
 if [[ $1 == "coreos" ]]; then
 	BIN_DIR=${BIN_DIR:-/opt/bin}
-	KUBELET_EXEC=${KUBELET_EXEC:-${BIN_DIR}/kubelet}
-	INSTALL_KUBELET=1
-	#KUBELET_EXEC=${KUBELET_EXEC:-/usr/lib/coreos/kubelet-wrapper}
+	if [[ ${INSTALL_KUBELET} == 1 ]]; then
+		KUBELET_EXEC=${KUBELET_EXEC:-${BIN_DIR}/kubelet}
+	else
+		KUBELET_EXEC=${KUBELET_EXEC:-/usr/lib/coreos/kubelet-wrapper}
+	fi
 	EXTRA_ENVIRONMENT=${EXTRA_ENVIRONMENT:-"RKT_RUN_ARGS=--volume opt-cni,kind=host,source=/opt/cni --mount volume=opt-cni,target=/opt/cni --volume etc-cni,kind=host,source=/etc/cni --mount volume=etc-cni,target=/etc/cni"}
 elif [[ $1 == "ubuntu" || $1 == "debian" || $1 == "fedora" || $1 == "centos" ]]; then
 	BIN_DIR=${BIN_DIR:-/usr/bin}
